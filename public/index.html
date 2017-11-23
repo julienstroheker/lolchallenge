@@ -44,85 +44,46 @@
 
             return new Blob([uInt8Array], { type: contentType });
         };
+
     const sendImage = (imagePath) => {
-        var params = { };
-
-        $.ajax({
-            // NOTE: You must use the same location in your REST call as you used to obtain your subscription keys.
-            //   For example, if you obtained your subscription keys from westcentralus, replace "westus" in the 
-            //   URL below with "westcentralus".
-            url: "https://westus.api.cognitive.microsoft.com/emotion/v1.0/recognize?" + $.param(params),
-            beforeSend: function(xhrObj){
-                // Request headers, also supports "application/octet-stream"
-                xhrObj.setRequestHeader("Content-Type","application/octet-stream");
-
-                // NOTE: Replace the "Ocp-Apim-Subscription-Key" value with a valid subscription key.
-                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","c05794874ac344d69434a713526a59a8");
-            },
-            type: "POST",
-            processData: false,
-            // Request body
-            data: makeblob(imagePath),
-        }).done(function(data) {
-            // Get face rectangle dimensions
-
-            var faceRectangle = data[0].faceRectangle;
-            var faceRectangleList = $('#faceRectangle');
-            faceRectangleList.html("")
-
-            // Append to DOM
-            for (var prop in faceRectangle) {
-                faceRectangleList.append("<li> " + prop + ": " + faceRectangle[prop] + "</li>");
-            }
-
-            // Get emotion confidence scores
-            var scores = data[0].scores;
-            var scoresList = $('#scores');
-            scoresList.html("")
-
-            // Append to DOM
-            for(var prop in scores) {
-                scoresList.append("<li> " + prop + ": " + scores[prop] + "</li>")
-            }
-        }).fail(function(err) {
-            alert("Error: " + JSON.stringify(err));
-        });
-    };
-    const sendImage2 = (imagePath) => {
+      let img = makeblob(imagePath)
       $.ajax({
             // NOTE: You must use the same location in your REST call as you used to obtain your subscription keys.
             //   For example, if you obtained your subscription keys from westcentralus, replace "westus" in the 
             //   URL below with "westcentralus".
             url: "/sendimage",
-            beforeSend: function(xhrObj){
-                // Request headers, also supports "application/octet-stream"
-                xhrObj.setRequestHeader("Content-Type","application/octet-stream");
-            },
+            // beforeSend: function(xhrObj){
+            //     // Request headers, also supports "application/octet-stream"
+            //     xhrObj.setRequestHeader("Content-Type","application/octet-stream");
+            // },
+            contentType: 'application/octet-stream',
             type: "POST",
+            processData: false,
             // Request body
-            data: imagePath,
-        }).done(function(data) {
-            // Get face rectangle dimensions
+            data: img,
+            success: function(data) {
+                // Get face rectangle dimensions
 
-            var faceRectangle = data[0].faceRectangle;
-            var faceRectangleList = $('#faceRectangle');
-            faceRectangleList.html("")
+                var faceRectangle = data[0].faceRectangle;
+                var faceRectangleList = $('#faceRectangle');
+                faceRectangleList.html("")
 
-            // Append to DOM
-            for (var prop in faceRectangle) {
-                faceRectangleList.append("<li> " + prop + ": " + faceRectangle[prop] + "</li>");
+                // Append to DOM
+                for (var prop in faceRectangle) {
+                    faceRectangleList.append("<li> " + prop + ": " + faceRectangle[prop] + "</li>");
+                }
+
+                // Get emotion confidence scores
+                var scores = data[0].scores;
+                var scoresList = $('#scores');
+                scoresList.html("")
+
+                // Append to DOM
+                for(var prop in scores) {
+                    scoresList.append("<li> " + prop + ": " + scores[prop] + "</li>")
+                }
             }
-
-            // Get emotion confidence scores
-            var scores = data[0].scores;
-            var scoresList = $('#scores');
-            scoresList.html("")
-
-            // Append to DOM
-            for(var prop in scores) {
-                scoresList.append("<li> " + prop + ": " + scores[prop] + "</li>")
-            }
-        })
+        });
     }
     var video = document.querySelector('video')
       , canvas;
@@ -147,7 +108,7 @@
       img.src = canvas.toDataURL('image/png');
       //document.body.appendChild(img);
       // sendImage(img.src);
-      sendImage2(img.src);
+      sendImage(img.src);
     }
 
     // use MediaDevices API
