@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>HTML5 Media Device Access</title>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  <title>LolChallenge</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">  
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     video, img {
@@ -12,123 +12,30 @@
   </style>
 </head>
 <body>
-<iframe width="854" height="480" src="https://www.youtube.com/embed/SpuPtxTZ8js?list=PL81PMzENbwgTtTaikPyOwez9BFTyDk6eT" frameborder="0" gesture="media" allowfullscreen></iframe>
-<video autoplay></video>
-
-<h2>Emotions</h2>
-<ul id="scores">
-<!-- Will populate list with response content -->
-</ul>
-
-<script>
-  (function() {
-    'use strict';
-    const makeblob = (dataURL) => {
-            var BASE64_MARKER = ';base64,';
-            if (dataURL.indexOf(BASE64_MARKER) == -1) {
-                var parts = dataURL.split(',');
-                var contentType = parts[0].split(':')[1];
-                var raw = decodeURIComponent(parts[1]);
-                return new Blob([raw], { type: contentType });
-            }
-            var parts = dataURL.split(BASE64_MARKER);
-            var contentType = parts[0].split(':')[1];
-            var raw = window.atob(parts[1]);
-            var rawLength = raw.length;
-
-            var uInt8Array = new Uint8Array(rawLength);
-
-            for (var i = 0; i < rawLength; ++i) {
-                uInt8Array[i] = raw.charCodeAt(i);
-            }
-
-            return new Blob([uInt8Array], { type: contentType });
-        };
-
-    const sendImage = (imagePath) => {
-      let img = makeblob(imagePath)
-      $.ajax({
-            // NOTE: You must use the same location in your REST call as you used to obtain your subscription keys.
-            //   For example, if you obtained your subscription keys from westcentralus, replace "westus" in the 
-            //   URL below with "westcentralus".
-            url: "/sendimage",
-            // beforeSend: function(xhrObj){
-            //     // Request headers, also supports "application/octet-stream"
-            //     xhrObj.setRequestHeader("Content-Type","application/octet-stream");
-            // },
-            contentType: 'application/octet-stream',
-            type: "POST",
-            processData: false,
-            // Request body
-            data: img,
-            success: function(data) {
-                // Get face rectangle dimensions
-
-                var faceRectangle = data[0].faceRectangle;
-                var faceRectangleList = $('#faceRectangle');
-                faceRectangleList.html("")
-
-                // Append to DOM
-                for (var prop in faceRectangle) {
-                    faceRectangleList.append("<li> " + prop + ": " + faceRectangle[prop] + "</li>");
-                }
-
-                // Get emotion confidence scores
-                var scores = data[0].scores;
-                var scoresList = $('#scores');
-                scoresList.html("")
-
-                // Append to DOM
-                for(var prop in scores) {
-                    scoresList.append("<li> " + prop + ": " + scores[prop] + "</li>")
-                }
-            }
-        });
-    }
-    var video = document.querySelector('video')
-      , canvas;
-
-    /**
-     *  generates a still frame image from the stream in the <video>
-     *  appends the image to the <body>
-     */
-    function takeSnapshot() {
-      var img = document.querySelector('img') || document.createElement('img');
-      var context;
-      var width = video.offsetWidth
-        , height = video.offsetHeight;
-
-      canvas = canvas || document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-
-      context = canvas.getContext('2d');
-      context.drawImage(video, 0, 0, width, height);
-      
-      img.src = canvas.toDataURL('image/png');
-      //document.body.appendChild(img);
-      // sendImage(img.src);
-      sendImage(img.src);
-    }
-
-    // use MediaDevices API
-    // docs: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    if (navigator.mediaDevices) {
-      // access the web cam
-      navigator.mediaDevices.getUserMedia({video: true})
-      // permission granted:
-        .then(function(stream) {
-          video.src = window.URL.createObjectURL(stream);
-          video.addEventListener('click', takeSnapshot);
-        })
-        // permission denied:
-        .catch(function(error) {
-          document.body.textContent = 'Could not access the camera. Error: ' + error.name;
-        });
-    }
-  })();
-
-
-</script>
+  <nav class="navbar navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">Try to not *** Challenge</a>
+  </nav>  
+  <div class="row">
+      <div class="col-sm-9">
+          <iframe width="854" height="480" src="https://www.youtube.com/embed/SpuPtxTZ8js?list=PL81PMzENbwgTtTaikPyOwez9BFTyDk6eT" frameborder="0" gesture="media" allowfullscreen></iframe>
+        <div class="row">
+          <div class="col-8 col-sm-6">
+              <video autoplay></video>
+          </div>
+          <div class="col-4 col-sm-6">
+              <h2>Emotions</h2>
+              <ul id="scores"></ul>
+              <!-- Will populate list with response content -->
+              <h2>Score</h2>
+              <ul id="totlascore"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+<script src="js/app.js" />
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 </body>
 </html>
